@@ -2,6 +2,13 @@ import { Component, OnInit, OnDestroy, signal, computed, HostListener } from '@a
 import { CommonModule } from '@angular/common';
 
 export type WatchMode = 'TIME' | 'CALC' | 'SCI';
+type CalcOperator = '+' | '-' | '×' | '÷';
+type ScientificFunction = 'EXP' | 'SQRT' | 'LN';
+type Operator = CalcOperator | ScientificFunction;
+type Operation = {
+  calculate: (op1: number, op2: number) => number;
+  validate?: (op1: number, op2: number) => boolean;
+};
 
 @Component({
   selector: 'app-calculator',
@@ -24,7 +31,7 @@ export class Calculator implements OnInit, OnDestroy {
   // Calculator State
   readonly calcDisplay = signal<string>('0');
   readonly prevOperand = signal<number | null>(null);
-  readonly activeOperator = signal<string | null>(null);
+  readonly activeOperator = signal<Operator | null>(null);
   readonly waitingForNextOperand = signal<boolean>(false);
   readonly isError = signal<boolean>(false);
 
@@ -33,6 +40,33 @@ export class Calculator implements OnInit, OnDestroy {
 
   // Active key highlight for press feedback
   readonly activePressedKey = signal<string | null>(null);
+
+  private readonly operations: Record<Operator, Operation> = {
+    '+': {
+      calculate: (op1, op2) => op1 + op2,
+    },
+    '-': {
+      calculate: (op1, op2) => op1 - op2,
+    },
+    '×': {
+      calculate: (op1, op2) => op1 * op2,
+    },
+    '÷': {
+      validate: (_op1, op2) => op2 !== 0,
+      calculate: (op1, op2) => op1 / op2,
+    },
+    EXP: {
+      calculate: (op1, op2) => Math.pow(op1, op2),
+    },
+    SQRT: {
+      validate: (op1) => op1 >= 0,
+      calculate: (op1) => Math.sqrt(op1),
+    },
+    LN: {
+      validate: (op1) => op1 > 0,
+      calculate: (op1) => Math.log(op1),
+    },
+  };
 
   ngOnInit() {
     // Start clock timer
@@ -123,11 +157,11 @@ export class Calculator implements OnInit, OnDestroy {
   }
 
   // Scientific sidecar button click handler (stub left for custom math implementation)
-  onSciButtonClick(fn: 'EXP' | 'SQRT' | 'LN') {
+  onSciButtonClick(fn: ScientificFunction) {
     this.playSound('beep');
     this.activePressedKey.set(fn);
     setTimeout(() => this.activePressedKey.set(null), 150);
-    // User custom math implementation
+    this.handleCalcKey(fn);
   }
 
   // Keyboard Shortcuts HostListener
@@ -205,7 +239,8 @@ export class Calculator implements OnInit, OnDestroy {
         const current = this.calcDisplay();
         if (current === '0') {
           this.calcDisplay.set(key);
-        } else if (current.length < 8) { // max 8 digits LCD
+        } else if (current.length < 8) {
+          // max 8 digits LCD
           this.calcDisplay.set(current + key);
         }
       }
@@ -216,21 +251,34 @@ export class Calculator implements OnInit, OnDestroy {
       } else if (!this.calcDisplay().includes('.')) {
         this.calcDisplay.set(this.calcDisplay() + '.');
       }
-    } else if (['+', '-', '×', '÷'].includes(key)) {
+    } else if (['+', '-', '×', '÷', 'EXP'].includes(key)) {
       const currentValue = parseFloat(this.calcDisplay());
       if (this.prevOperand() !== null && this.activeOperator() && !this.waitingForNextOperand()) {
-        const result = this.calculateResult(this.prevOperand()!, currentValue, this.activeOperator()!);
+        const result = this.calculateResult(
+          this.prevOperand()!,
+          currentValue,
+          this.activeOperator()!,
+        );
         this.calcDisplay.set(this.formatResult(result));
         this.prevOperand.set(result);
       } else {
         this.prevOperand.set(currentValue);
       }
-      this.activeOperator.set(key);
+      this.activeOperator.set(key as Operator);
+      this.waitingForNextOperand.set(true);
+    } else if (key === 'SQRT' || key === 'LN') {
+      const currentValue = parseFloat(this.calcDisplay());
+      const result = this.calculateResult(currentValue, 0, key as Operator);
+      this.calcDisplay.set(this.formatResult(result));
       this.waitingForNextOperand.set(true);
     } else if (key === '=') {
       if (this.prevOperand() !== null && this.activeOperator()) {
         const currentValue = parseFloat(this.calcDisplay());
-        const result = this.calculateResult(this.prevOperand()!, currentValue, this.activeOperator()!);
+        const result = this.calculateResult(
+          this.prevOperand()!,
+          currentValue,
+          this.activeOperator()!,
+        );
         this.calcDisplay.set(this.formatResult(result));
         this.prevOperand.set(null);
         this.activeOperator.set(null);
@@ -241,21 +289,24 @@ export class Calculator implements OnInit, OnDestroy {
     }
   }
 
-  private calculateResult(op1: number, op2: number, operator: string): number {
-    let res = 0;
-    switch (operator) {
-      case '+': res = op1 + op2; break;
-      case '-': res = op1 - op2; break;
-      case '×': res = op1 * op2; break;
-      case '÷':
-        if (op2 === 0) {
-          this.isError.set(true);
-          return 0;
-        }
-        res = op1 / op2;
-        break;
+  private calculateResult(op1: number, op2: number, operator: Operator): number {
+    const operation = this.operations[operator];
+    const isValidInput =
+      Number.isFinite(op1) && Number.isFinite(op2) && (operation.validate?.(op1, op2) ?? true);
+
+    if (!isValidInput) {
+      this.isError.set(true);
+      return 0;
     }
-    return res;
+
+    const result = operation.calculate(op1, op2);
+
+    if (!Number.isFinite(result)) {
+      this.isError.set(true);
+      return 0;
+    }
+
+    return result;
   }
 
   private formatResult(num: number): string {

@@ -49,12 +49,10 @@ describe('Calculator Component', () => {
       expect(component.soundEnabled()).toBe(false);
     });
 
-    it('should handle scientific sidecar button clicks', () => {
+    it('should play sound on scientific sidecar button clicks', () => {
       const spy = vi.spyOn(component, 'playSound');
       component.onSciButtonClick('EXP');
       expect(spy).toHaveBeenCalledWith('beep');
-      component.onSciButtonClick('SQRT');
-      component.onSciButtonClick('LN');
     });
   });
 
@@ -138,6 +136,47 @@ describe('Calculator Component', () => {
       }
       expect(component.calcDisplay().length).toBe(8);
       expect(component.calcDisplay()).toBe('99999999');
+    });
+  });
+
+  describe('Scientific Mode Operations', () => {
+    beforeEach(() => {
+      component.currentMode.set('SCI');
+    });
+
+    it('should execute binary exponent operation (EXP): 2 ^ 3 = 8', () => {
+      component.pressKey('2');
+      component.onSciButtonClick('EXP');
+      component.pressKey('3');
+      component.pressKey('=');
+      expect(component.calcDisplay()).toBe('8');
+    });
+
+    it('should immediately execute unary square root (SQRT): √16 = 4', () => {
+      component.pressKey('1');
+      component.pressKey('6');
+      component.onSciButtonClick('SQRT');
+      expect(component.calcDisplay()).toBe('4');
+    });
+
+    it('should handle SQRT error on negative input', () => {
+      component.calcDisplay.set('-4');
+      component.onSciButtonClick('SQRT');
+      expect(component.isError()).toBe(true);
+      expect(component.calcDisplay()).toBe('E');
+    });
+
+    it('should immediately execute unary natural log (LN): ln(1) = 0', () => {
+      component.pressKey('1');
+      component.onSciButtonClick('LN');
+      expect(component.calcDisplay()).toBe('0');
+    });
+
+    it('should handle LN error on non-positive input', () => {
+      component.pressKey('0');
+      component.onSciButtonClick('LN');
+      expect(component.isError()).toBe(true);
+      expect(component.calcDisplay()).toBe('E');
     });
   });
 
