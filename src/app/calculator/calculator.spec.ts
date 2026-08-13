@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { Calculator } from './calculator';
 
 describe('Calculator Component', () => {
@@ -24,16 +25,12 @@ describe('Calculator Component', () => {
       expect(component.currentMode()).toBe('TIME');
     });
 
-    it('should cycle through all 5 modes sequentially', () => {
+    it('should cycle between TIME, CALC, and SCI modes', () => {
       expect(component.currentMode()).toBe('TIME');
       component.cycleMode();
       expect(component.currentMode()).toBe('CALC');
       component.cycleMode();
-      expect(component.currentMode()).toBe('ALARM');
-      component.cycleMode();
-      expect(component.currentMode()).toBe('STOPWATCH');
-      component.cycleMode();
-      expect(component.currentMode()).toBe('DUAL_TIME');
+      expect(component.currentMode()).toBe('SCI');
       component.cycleMode();
       expect(component.currentMode()).toBe('TIME');
     });
@@ -52,10 +49,12 @@ describe('Calculator Component', () => {
       expect(component.soundEnabled()).toBe(false);
     });
 
-    it('should toggle wrist view display mode', () => {
-      expect(component.wristView()).toBe(false);
-      component.toggleWristView();
-      expect(component.wristView()).toBe(true);
+    it('should handle scientific sidecar button clicks', () => {
+      const spy = vi.spyOn(component, 'playSound');
+      component.onSciButtonClick('EXP');
+      expect(spy).toHaveBeenCalledWith('beep');
+      component.onSciButtonClick('SQRT');
+      component.onSciButtonClick('LN');
     });
   });
 
@@ -139,46 +138,6 @@ describe('Calculator Component', () => {
       }
       expect(component.calcDisplay().length).toBe(8);
       expect(component.calcDisplay()).toBe('99999999');
-    });
-  });
-
-  describe('Stopwatch Functionality', () => {
-    beforeEach(() => {
-      component.currentMode.set('STOPWATCH');
-    });
-
-    it('should start, stop, and reset stopwatch', () => {
-      expect(component.swRunning()).toBe(false);
-      expect(component.swElapsedMs()).toBe(0);
-
-      component.toggleStopwatch();
-      expect(component.swRunning()).toBe(true);
-
-      component.toggleStopwatch();
-      expect(component.swRunning()).toBe(false);
-
-      component.resetStopwatch();
-      expect(component.swElapsedMs()).toBe(0);
-    });
-  });
-
-  describe('Alarm & Dual Time Controls', () => {
-    it('should toggle alarm enable and hourly chime', () => {
-      component.currentMode.set('ALARM');
-      const initialAlarm = component.alarmEnabled();
-      component.pressKey('9'); // ALM key
-      expect(component.alarmEnabled()).toBe(!initialAlarm);
-
-      const initialChime = component.hourlyChime();
-      component.pressKey('5'); // SIG key
-      expect(component.hourlyChime()).toBe(!initialChime);
-    });
-
-    it('should adjust dual time offset', () => {
-      component.currentMode.set('DUAL_TIME');
-      const initialOffset = component.dtOffsetHours();
-      component.pressKey('+');
-      expect(component.dtOffsetHours()).toBe((initialOffset + 1) % 24);
     });
   });
 

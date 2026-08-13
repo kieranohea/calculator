@@ -1,58 +1,38 @@
-<div class="calculator-wrapper min-h-screen bg-neutral-950 text-neutral-100 flex flex-col items-center justify-between p-2 sm:p-4 md:p-8 font-sans selection:bg-amber-500 selection:text-black overflow-x-hidden"
-     [class.wrist-mode]="wristView()">
+<div class="calculator-wrapper min-h-screen bg-neutral-950 text-neutral-100 flex flex-col items-center justify-between p-2 sm:p-4 md:p-8 font-sans selection:bg-amber-500 selection:text-black overflow-x-hidden">
 
   <!-- Top Control Header / Mode Quick Bar -->
   <header class="w-full max-w-2xl flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 bg-neutral-900/80 backdrop-blur border border-neutral-800 p-2.5 sm:p-4 rounded-2xl shadow-xl z-20">
     <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-neutral-800 to-neutral-900 border border-neutral-700 flex items-center justify-center shadow-inner text-amber-400 shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </div>
       <div>
         <h1 class="text-base sm:text-lg font-bold tracking-tight bg-gradient-to-r from-white via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
-          CASIO <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">CA-53W</span>
+          CASIO
         </h1>
         <p class="text-[11px] sm:text-xs text-neutral-400">Calculator Watch Emulator</p>
       </div>
     </div>
 
-    <!-- Mode Selector Tabs (Scrollable on small mobile screens) -->
-    <div class="flex items-center gap-1 sm:gap-1.5 bg-neutral-950/80 p-1 sm:p-1.5 rounded-xl border border-neutral-800 text-[11px] sm:text-xs font-mono max-w-full overflow-x-auto scrollbar-none">
+    <!-- Mode Selector Tabs (TIME, CALC, SCI) -->
+    <div class="flex items-center gap-1 sm:gap-1.5 bg-neutral-950/80 p-1 sm:p-1.5 rounded-xl border border-neutral-800 text-[11px] sm:text-xs font-mono select-none">
       <button (click)="currentMode.set('TIME'); playSound('mode')"
               [class.bg-amber-500]="currentMode() === 'TIME'"
               [class.text-black]="currentMode() === 'TIME'"
               [class.font-bold]="currentMode() === 'TIME'"
-              class="px-2 sm:px-2.5 py-1 rounded-lg transition-all hover:bg-neutral-800 hover:text-white shrink-0">
+              class="px-3 sm:px-4 py-1 rounded-lg transition-all hover:bg-neutral-800 hover:text-white shrink-0">
         TIME
       </button>
       <button (click)="currentMode.set('CALC'); playSound('mode')"
               [class.bg-amber-500]="currentMode() === 'CALC'"
               [class.text-black]="currentMode() === 'CALC'"
               [class.font-bold]="currentMode() === 'CALC'"
-              class="px-2 sm:px-2.5 py-1 rounded-lg transition-all hover:bg-neutral-800 hover:text-white shrink-0">
+              class="px-3 sm:px-4 py-1 rounded-lg transition-all hover:bg-neutral-800 hover:text-white shrink-0">
         CALC
       </button>
-      <button (click)="currentMode.set('ALARM'); playSound('mode')"
-              [class.bg-amber-500]="currentMode() === 'ALARM'"
-              [class.text-black]="currentMode() === 'ALARM'"
-              [class.font-bold]="currentMode() === 'ALARM'"
-              class="px-2 sm:px-2.5 py-1 rounded-lg transition-all hover:bg-neutral-800 hover:text-white shrink-0">
-        ALM
-      </button>
-      <button (click)="currentMode.set('STOPWATCH'); playSound('mode')"
-              [class.bg-amber-500]="currentMode() === 'STOPWATCH'"
-              [class.text-black]="currentMode() === 'STOPWATCH'"
-              [class.font-bold]="currentMode() === 'STOPWATCH'"
-              class="px-2 sm:px-2.5 py-1 rounded-lg transition-all hover:bg-neutral-800 hover:text-white shrink-0">
-        ST
-      </button>
-      <button (click)="currentMode.set('DUAL_TIME'); playSound('mode')"
-              [class.bg-amber-500]="currentMode() === 'DUAL_TIME'"
-              [class.text-black]="currentMode() === 'DUAL_TIME'"
-              [class.font-bold]="currentMode() === 'DUAL_TIME'"
-              class="px-2 sm:px-2.5 py-1 rounded-lg transition-all hover:bg-neutral-800 hover:text-white shrink-0">
-        DT
+      <button (click)="currentMode.set('SCI'); playSound('mode')"
+              [class.bg-amber-500]="currentMode() === 'SCI'"
+              [class.text-black]="currentMode() === 'SCI'"
+              [class.font-bold]="currentMode() === 'SCI'"
+              class="px-3 sm:px-4 py-1 rounded-lg transition-all hover:bg-neutral-800 hover:text-white shrink-0">
+        SCI 🔬
       </button>
     </div>
 
@@ -81,17 +61,6 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
         </svg>
       </button>
-
-      <!-- Wrist View Toggle -->
-      <button (click)="toggleWristView()"
-              title="Toggle Arm / Tabletop Display View"
-              [class.bg-amber-500/20]="wristView()"
-              [class.text-amber-400]="wristView()"
-              class="p-1.5 sm:p-2 rounded-xl bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white hover:bg-neutral-700 transition-all flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-        </svg>
-      </button>
     </div>
   </header>
 
@@ -110,275 +79,268 @@
       <div class="w-12 sm:w-16 h-1.5 sm:h-2 bg-neutral-800 rounded-b-md shadow-md"></div>
     </div>
 
-    <!-- MAIN WATCH CASE / BEZEL -->
-    <div class="watch-body relative w-[285px] xs:w-[310px] sm:w-[360px] max-w-[calc(100vw-24px)] bg-[#1a1a1a] rounded-[28px] sm:rounded-[36px] p-3 sm:p-5 border-2 sm:border-4 border-[#2b2b2b] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_20px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1)] z-10 select-none transition-transform duration-300 hover:scale-[1.01]">
+    <!-- WATCH CASE & SLIDE-OUT SCIENTIFIC SIDECAR WRAPPER -->
+    <div class="watch-and-sidecar-wrapper relative flex items-center justify-center">
 
-      <!-- Left Push Buttons -->
-      <button (click)="toggleLight()"
-              title="Light / Set Button (L)"
-              class="side-button side-btn-left-top absolute -left-2.5 sm:-left-3.5 top-20 sm:top-24 w-2.5 sm:w-3.5 h-8 sm:h-10 bg-gradient-to-r from-neutral-600 to-neutral-400 rounded-l-md border border-neutral-700 shadow-md active:translate-x-1 transition-transform cursor-pointer">
-      </button>
-      <button (click)="cycleMode()"
-              title="Mode Button (M)"
-              class="side-button side-btn-left-bottom absolute -left-2.5 sm:-left-3.5 top-36 sm:top-44 w-2.5 sm:w-3.5 h-10 sm:h-12 bg-gradient-to-r from-neutral-600 to-neutral-400 rounded-l-md border border-neutral-700 shadow-md active:translate-x-1 transition-transform cursor-pointer">
-      </button>
+      <!-- MAIN WATCH CASE / BEZEL -->
+      <div class="watch-body relative w-[285px] xs:w-[310px] sm:w-[360px] max-w-[calc(100vw-24px)] bg-[#1a1a1a] rounded-[28px] sm:rounded-[36px] p-3 sm:p-5 border-2 sm:border-4 border-[#2b2b2b] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_20px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1)] z-10 select-none transition-transform duration-300 hover:scale-[1.01]">
 
-      <!-- Right Push Button -->
-      <button (click)="resetStopwatch(); clearCalc()"
-              title="Adjust / Reset Button"
-              class="side-button side-btn-right absolute -right-2.5 sm:-right-3.5 top-28 sm:top-32 w-2.5 sm:w-3.5 h-10 sm:h-12 bg-gradient-to-l from-neutral-600 to-neutral-400 rounded-r-md border border-neutral-700 shadow-md active:-translate-x-1 transition-transform cursor-pointer">
-      </button>
+        <!-- Left Push Buttons -->
+        <button (click)="toggleLight()"
+                title="Light Button (L)"
+                class="side-button side-btn-left-top absolute -left-2.5 sm:-left-3.5 top-20 sm:top-24 w-2.5 sm:w-3.5 h-8 sm:h-10 bg-gradient-to-r from-neutral-600 to-neutral-400 rounded-l-md border border-neutral-700 shadow-md active:translate-x-1 transition-transform cursor-pointer">
+        </button>
+        <button (click)="cycleMode()"
+                title="Mode Button (M)"
+                class="side-button side-btn-left-bottom absolute -left-2.5 sm:-left-3.5 top-36 sm:top-44 w-2.5 sm:w-3.5 h-10 sm:h-12 bg-gradient-to-r from-neutral-600 to-neutral-400 rounded-l-md border border-neutral-700 shadow-md active:translate-x-1 transition-transform cursor-pointer">
+        </button>
 
-      <!-- BEZEL HEADER GRAPHICS -->
-      <div class="bezel-header flex items-center justify-between mb-2 sm:mb-3 px-1 sm:px-2">
-        <div class="flex flex-col">
-          <span class="casio-logo font-black text-lg sm:text-xl tracking-widest text-neutral-200 font-sans leading-none drop-shadow">CASIO</span>
-          <span class="text-[8px] sm:text-[9px] font-bold text-amber-500 tracking-wider font-mono uppercase mt-0.5">WR <span class="text-neutral-400">WATER RESIST</span></span>
-        </div>
-        <div class="text-right">
-          <span class="text-[9px] sm:text-[10px] font-bold text-neutral-400 tracking-widest uppercase block font-mono">ALARM CHRONO</span>
-          <span class="text-[8px] sm:text-[9px] font-extrabold text-blue-400 tracking-wider uppercase font-mono">DUAL TIME</span>
-        </div>
-      </div>
+        <!-- Right Push Button -->
+        <button (click)="clearCalc()"
+                title="Clear / Reset Button"
+                class="side-button side-btn-right absolute -right-2.5 sm:-right-3.5 top-28 sm:top-32 w-2.5 sm:w-3.5 h-10 sm:h-12 bg-gradient-to-l from-neutral-600 to-neutral-400 rounded-r-md border border-neutral-700 shadow-md active:-translate-x-1 transition-transform cursor-pointer">
+        </button>
 
-      <!-- RETRO LCD DISPLAY FRAME -->
-      <div class="lcd-frame relative p-2 sm:p-2.5 rounded-2xl bg-[#0f1110] border-2 border-[#333] shadow-[inset_0_3px_8px_rgba(0,0,0,0.9)] mb-3 sm:mb-4">
-        <!-- Colored Trim Lines (Iconic Red and Blue Casio Accent Lines) -->
-        <div class="lcd-trim-lines mb-1 flex items-center justify-between gap-1.5 sm:gap-2 px-1">
-          <div class="h-0.5 flex-1 bg-red-600 shadow-[0_0_3px_rgba(220,38,38,0.8)]"></div>
-          <div class="text-[7px] sm:text-[8px] font-mono text-neutral-500 uppercase tracking-widest px-0.5">MODES: TIME • CALC • ALM • ST • DT</div>
-          <div class="h-0.5 flex-1 bg-blue-600 shadow-[0_0_3px_rgba(37,99,235,0.8)]"></div>
-        </div>
-
-        <!-- LCD GLASS SCREEN -->
-        <div class="lcd-screen relative h-20 sm:h-28 rounded-lg p-2 sm:p-2.5 flex flex-col justify-between overflow-hidden transition-colors duration-200 border border-neutral-900"
-             [class.lcd-light-on]="lightActive()"
-             [class.lcd-light-off]="!lightActive()">
-
-          <!-- Subtle LCD Grid Lines Glass Overlay -->
-          <div class="absolute inset-0 bg-repeat opacity-5 pointer-events-none z-10"
-               style="background-size: 4px 4px; background-image: linear-gradient(to right, rgba(0,0,0,0.4) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.4) 1px, transparent 1px);">
+        <!-- BEZEL HEADER GRAPHICS -->
+        <div class="bezel-header flex items-center justify-between mb-2 sm:mb-3 px-1 sm:px-2">
+          <div class="flex flex-col">
+            <span class="casio-logo font-black text-lg sm:text-xl tracking-widest text-neutral-200 font-sans leading-none drop-shadow">CASIO</span>
+            <span class="text-[8px] sm:text-[9px] font-bold text-amber-500 tracking-wider font-mono uppercase mt-0.5">WR <span class="text-neutral-400">WATER RESIST</span></span>
           </div>
-
-          <!-- LCD TOP SUB-HEADER BAR -->
-          <div class="lcd-top-bar flex items-center justify-between text-[10px] sm:text-xs font-mono tracking-wider font-semibold z-10">
-
-            <!-- Mode & Day Badge -->
-            <div class="flex items-center gap-1.5 sm:gap-2">
-              <!-- Mode Indicator Badge -->
-              <span class="px-1 py-0.5 rounded text-[8px] sm:text-[9px] font-bold tracking-normal uppercase border"
-                    [class.bg-black]="!lightActive()"
-                    [class.text-emerald-400]="!lightActive()"
-                    [class.bg-emerald-950]="lightActive()"
-                    [class.text-emerald-200]="lightActive()"
-                    [class.border-emerald-500]="lightActive()">
-                {{ currentMode() }}
-              </span>
-
-              <!-- Day of Week in TIME mode -->
-              <span *ngIf="currentMode() === 'TIME'" class="font-bold text-neutral-900 tracking-widest dark-lcd-text">
-                {{ formattedDayOfWeek() }}
-              </span>
-            </div>
-
-            <!-- Status Icons (24H, PM, ALM, SIG) -->
-            <div class="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] font-bold dark-lcd-text">
-              <span *ngIf="hourlyChime()" class="tracking-tighter">SIG</span>
-              <span *ngIf="alarmEnabled()" class="tracking-tighter">ALM</span>
-              <span *ngIf="is24Hour() && currentMode() === 'TIME'" class="tracking-tighter">24H</span>
-              <span *ngIf="!is24Hour() && isPm() && currentMode() === 'TIME'" class="tracking-tighter">PM</span>
-              <span *ngIf="activeOperator()" class="text-xs font-black">{{ activeOperator() }}</span>
-            </div>
-          </div>
-
-          <!-- LCD MAIN DIGITAL DISPLAY AREA -->
-          <div class="lcd-main-display relative flex flex-col justify-center items-end flex-1 z-10 font-mono tracking-normal leading-none my-auto">
-
-            <!-- BACKGROUND GHOST SEGMENTS (88888888 for authentic LCD look) -->
-            <div class="ghost-segments absolute right-0 bottom-1 opacity-[0.08] text-right font-mono text-3xl sm:text-5xl tracking-widest pointer-events-none select-none">
-              88888888
-            </div>
-
-            <!-- MODE 1: TIME DISPLAY -->
-            <div *ngIf="currentMode() === 'TIME'" class="w-full flex items-baseline justify-between">
-              <span class="text-[10px] sm:text-sm font-semibold tracking-wider dark-lcd-text font-mono">
-                {{ formattedMonthDate() }}
-              </span>
-              <div class="flex items-baseline font-mono text-2xl sm:text-4xl font-bold tracking-wider dark-lcd-text">
-                <span>{{ formattedTimeHours() }}</span>
-                <span class="animate-pulse mx-0.5">:</span>
-                <span>{{ formattedTimeMinutes() }}</span>
-                <span class="text-base sm:text-xl ml-1 font-semibold">{{ formattedTimeSeconds() }}</span>
-              </div>
-            </div>
-
-            <!-- MODE 2: CALCULATOR DISPLAY -->
-            <div *ngIf="currentMode() === 'CALC'" class="w-full flex items-center justify-between">
-              <span *ngIf="isError()" class="text-base sm:text-lg font-bold text-red-700 dark-lcd-text">ERR</span>
-              <span *ngIf="!isError() && prevOperand() !== null" class="text-[10px] sm:text-xs font-semibold dark-lcd-text">M</span>
-              <span class="text-2xl sm:text-4xl font-bold font-mono tracking-widest dark-lcd-text ml-auto">
-                {{ calcDisplay() }}
-              </span>
-            </div>
-
-            <!-- MODE 3: ALARM DISPLAY -->
-            <div *ngIf="currentMode() === 'ALARM'" class="w-full flex items-baseline justify-between">
-              <span class="text-xs sm:text-sm font-bold dark-lcd-text">AL</span>
-              <div class="text-2xl sm:text-4xl font-bold font-mono tracking-wider dark-lcd-text">
-                {{ formattedAlarmDisplay() }}
-              </div>
-            </div>
-
-            <!-- MODE 4: STOPWATCH DISPLAY -->
-            <div *ngIf="currentMode() === 'STOPWATCH'" class="w-full flex items-baseline justify-between">
-              <span class="text-xs font-bold dark-lcd-text">ST</span>
-              <div class="flex items-baseline font-mono text-2xl sm:text-4xl font-bold tracking-wider dark-lcd-text">
-                <span>{{ formattedStopwatchDisplay().mins }}</span>
-                <span class="mx-0.5">:</span>
-                <span>{{ formattedStopwatchDisplay().secs }}</span>
-                <span class="text-base sm:text-xl ml-1 font-semibold">.{{ formattedStopwatchDisplay().cs }}</span>
-              </div>
-            </div>
-
-            <!-- MODE 5: DUAL TIME DISPLAY -->
-            <div *ngIf="currentMode() === 'DUAL_TIME'" class="w-full flex items-baseline justify-between">
-              <span class="text-[10px] sm:text-xs font-bold dark-lcd-text">DT ({{ dtOffsetHours() >= 0 ? '+' : '' }}{{ dtOffsetHours() }}h)</span>
-              <div class="text-xl sm:text-3xl font-bold font-mono tracking-wider dark-lcd-text">
-                {{ formattedDualTimeDisplay() }}
-              </div>
-            </div>
-
+          <div class="text-right">
+            <span class="text-[9px] sm:text-[10px] font-bold text-neutral-400 tracking-widest uppercase block font-mono">CALCULATOR</span>
           </div>
         </div>
+
+        <!-- RETRO LCD DISPLAY FRAME -->
+        <div class="lcd-frame relative p-2 sm:p-2.5 rounded-2xl bg-[#0f1110] border-2 border-[#333] shadow-[inset_0_3px_8px_rgba(0,0,0,0.9)] mb-3 sm:mb-4">
+          <!-- Colored Trim Lines -->
+          <div class="lcd-trim-lines mb-1 flex items-center justify-between gap-1.5 sm:gap-2 px-1">
+            <div class="h-0.5 flex-1 bg-red-600 shadow-[0_0_3px_rgba(220,38,38,0.8)]"></div>
+            <div class="text-[7px] sm:text-[8px] font-mono text-neutral-500 uppercase tracking-widest px-0.5">MODES: TIME • CALC • SCIENTIFIC</div>
+            <div class="h-0.5 flex-1 bg-blue-600 shadow-[0_0_3px_rgba(37,99,235,0.8)]"></div>
+          </div>
+
+          <!-- LCD GLASS SCREEN -->
+          <div class="lcd-screen relative h-20 sm:h-28 rounded-lg p-2 sm:p-2.5 flex flex-col justify-between overflow-hidden transition-colors duration-200 border border-neutral-900"
+               [class.lcd-light-on]="lightActive()"
+               [class.lcd-light-off]="!lightActive()">
+
+            <!-- Subtle LCD Grid Lines Glass Overlay -->
+            <div class="absolute inset-0 bg-repeat opacity-5 pointer-events-none z-10"
+                 style="background-size: 4px 4px; background-image: linear-gradient(to right, rgba(0,0,0,0.4) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.4) 1px, transparent 1px);">
+            </div>
+
+            <!-- LCD TOP SUB-HEADER BAR -->
+            <div class="lcd-top-bar flex items-center justify-between text-[10px] sm:text-xs font-mono tracking-wider font-semibold z-10">
+
+              <!-- Mode & Day Badge -->
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <!-- Mode Indicator Badge -->
+                <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-bold tracking-normal uppercase border"
+                      [class.bg-black]="!lightActive()"
+                      [class.text-emerald-400]="!lightActive()"
+                      [class.bg-emerald-950]="lightActive()"
+                      [class.text-emerald-200]="lightActive()"
+                      [class.border-emerald-500]="lightActive()">
+                  {{ currentMode() }}
+                </span>
+
+                <!-- Day of Week in TIME mode -->
+                <span *ngIf="currentMode() === 'TIME'" class="font-bold text-neutral-900 tracking-widest dark-lcd-text">
+                  {{ formattedDayOfWeek() }}
+                </span>
+              </div>
+
+              <!-- Status Icons (24H, PM, Active Operator) -->
+              <div class="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] font-bold dark-lcd-text">
+                <span *ngIf="is24Hour() && currentMode() === 'TIME'" class="tracking-tighter">24H</span>
+                <span *ngIf="!is24Hour() && isPm() && currentMode() === 'TIME'" class="tracking-tighter">PM</span>
+                <span *ngIf="activeOperator()" class="text-xs font-black">{{ activeOperator() }}</span>
+              </div>
+            </div>
+
+            <!-- LCD MAIN DIGITAL DISPLAY AREA -->
+            <div class="lcd-main-display relative flex flex-col justify-center items-end flex-1 z-10 font-mono tracking-normal leading-none my-auto">
+
+              <!-- BACKGROUND GHOST SEGMENTS (88888888 for authentic LCD look) -->
+              <div class="ghost-segments absolute right-0 bottom-1 opacity-[0.08] text-right font-mono text-3xl sm:text-5xl tracking-widest pointer-events-none select-none">
+                88888888
+              </div>
+
+              <!-- MODE 1: TIME DISPLAY -->
+              <div *ngIf="currentMode() === 'TIME'" class="w-full flex items-baseline justify-between">
+                <span class="text-[10px] sm:text-sm font-semibold tracking-wider dark-lcd-text font-mono">
+                  {{ formattedMonthDate() }}
+                </span>
+                <div class="flex items-baseline font-mono text-2xl sm:text-4xl font-bold tracking-wider dark-lcd-text">
+                  <span>{{ formattedTimeHours() }}</span>
+                  <span class="animate-pulse mx-0.5">:</span>
+                  <span>{{ formattedTimeMinutes() }}</span>
+                  <span class="text-base sm:text-xl ml-1 font-semibold">{{ formattedTimeSeconds() }}</span>
+                </div>
+              </div>
+
+              <!-- MODE 2 & 3: CALCULATOR / SCIENTIFIC DISPLAY -->
+              <div *ngIf="currentMode() === 'CALC' || currentMode() === 'SCI'" class="w-full flex items-center justify-between">
+                <span *ngIf="isError()" class="text-base sm:text-lg font-bold text-red-700 dark-lcd-text">ERR</span>
+                <span *ngIf="!isError() && prevOperand() !== null" class="text-[10px] sm:text-xs font-semibold dark-lcd-text">M</span>
+                <span class="text-2xl sm:text-4xl font-bold font-mono tracking-widest dark-lcd-text ml-auto">
+                  {{ calcDisplay() }}
+                </span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 16-BUTTON CASIO CALCULATOR KEYPAD GRID -->
+        <div class="keypad-grid grid grid-cols-4 gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-[#141414] rounded-2xl border border-neutral-800 shadow-inner">
+
+          <!-- ROW 1 -->
+          <button (click)="pressKey('7')"
+                  [class.key-pressed]="activePressedKey() === '7'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">7</span>
+          </button>
+
+          <button (click)="pressKey('8')"
+                  [class.key-pressed]="activePressedKey() === '8'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">8</span>
+          </button>
+
+          <button (click)="pressKey('9')"
+                  [class.key-pressed]="activePressedKey() === '9'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">9</span>
+          </button>
+
+          <button (click)="pressKey('÷')"
+                  [class.key-pressed]="activePressedKey() === '÷' || activePressedKey() === '/'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-800 border border-neutral-600 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-amber-400 leading-none">÷</span>
+          </button>
+
+          <!-- ROW 2 -->
+          <button (click)="pressKey('4')"
+                  [class.key-pressed]="activePressedKey() === '4'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">4</span>
+          </button>
+
+          <button (click)="pressKey('5')"
+                  [class.key-pressed]="activePressedKey() === '5'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">5</span>
+          </button>
+
+          <button (click)="pressKey('6')"
+                  [class.key-pressed]="activePressedKey() === '6'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">6</span>
+          </button>
+
+          <button (click)="pressKey('×')"
+                  [class.key-pressed]="activePressedKey() === '×' || activePressedKey() === '*'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-800 border border-neutral-600 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-amber-400 leading-none">×</span>
+          </button>
+
+          <!-- ROW 3 -->
+          <button (click)="pressKey('1')"
+                  [class.key-pressed]="activePressedKey() === '1'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">1</span>
+          </button>
+
+          <button (click)="pressKey('2')"
+                  [class.key-pressed]="activePressedKey() === '2'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">2</span>
+          </button>
+
+          <button (click)="pressKey('3')"
+                  [class.key-pressed]="activePressedKey() === '3'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">3</span>
+          </button>
+
+          <button (click)="pressKey('-')"
+                  [class.key-pressed]="activePressedKey() === '-'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-800 border border-neutral-600 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_2px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-amber-400 leading-none">-</span>
+          </button>
+
+          <!-- ROW 4 -->
+          <button (click)="pressKey('0')"
+                  [class.key-pressed]="activePressedKey() === '0'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_2px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">0</span>
+          </button>
+
+          <button (click)="pressKey('.')"
+                  [class.key-pressed]="activePressedKey() === '.'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_2px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-neutral-100 leading-none">•</span>
+          </button>
+
+          <button (click)="pressKey('=')"
+                  [class.key-pressed]="activePressedKey() === '=' || activePressedKey() === 'Enter'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-amber-600 border border-amber-500 shadow-[0_2px_0_#7c2d12,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_2px_0_#7c2d12,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-white leading-none">=</span>
+          </button>
+
+          <button (click)="pressKey('+')"
+                  [class.key-pressed]="activePressedKey() === '+'"
+                  class="key-btn group relative flex items-center justify-center p-2.5 sm:p-3.5 rounded-lg bg-neutral-800 border border-neutral-600 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_2px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
+            <span class="text-base sm:text-xl font-extrabold font-mono text-amber-400 leading-none">+</span>
+          </button>
+
+        </div>
       </div>
 
-      <!-- KEYPAD SUB-HEADER GRAPHICS & LEGENDS -->
-      <div class="keypad-header flex items-center justify-between px-1 mb-1.5 sm:mb-2 text-[8px] sm:text-[9px] font-mono font-bold text-neutral-400 uppercase tracking-tight">
-        <span>LAP·RESET</span>
-        <span class="text-amber-500 font-extrabold">16-KEY MATRIX</span>
-        <span>START·STOP</span>
+      <!-- SLIDE-OUT SCIENTIFIC SIDECAR PANEL -->
+      <div class="sci-sidecar" [class.sidecar-open]="currentMode() === 'SCI'">
+        <!-- Metallic Hinge Connection -->
+        <div class="sidecar-hinge"></div>
+
+        <!-- Sidecar Housing -->
+        <div class="sidecar-body bg-[#18181b] border-2 border-neutral-700 rounded-r-2xl sm:rounded-r-3xl p-2.5 sm:p-3.5 shadow-2xl flex flex-col items-center justify-between gap-3 select-none">
+          
+          <div class="flex items-center gap-1 border-b border-neutral-800 pb-1.5 w-full justify-center">
+            <span class="text-[9px] sm:text-[10px] font-black font-mono tracking-wider text-amber-400 uppercase">SCI</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          </div>
+
+          <!-- 3 Extra Scientific Function Buttons -->
+          <!-- 1. Exponent -->
+          <button (click)="onSciButtonClick('EXP')"
+                  [class.key-pressed]="activePressedKey() === 'EXP'"
+                  class="sci-btn group flex flex-col items-center justify-center w-12 sm:w-16 h-11 sm:h-14 rounded-xl bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f] active:translate-y-0.5 transition-all hover:bg-neutral-800 hover:border-amber-500/50">
+            <span class="text-sm sm:text-base font-black font-mono text-amber-400 leading-none">x<sup>y</sup></span>
+            <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 uppercase mt-1 group-hover:text-amber-300">EXP</span>
+          </button>
+
+          <!-- 2. Square Root -->
+          <button (click)="onSciButtonClick('SQRT')"
+                  [class.key-pressed]="activePressedKey() === 'SQRT'"
+                  class="sci-btn group flex flex-col items-center justify-center w-12 sm:w-16 h-11 sm:h-14 rounded-xl bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f] active:translate-y-0.5 transition-all hover:bg-neutral-800 hover:border-amber-500/50">
+            <span class="text-sm sm:text-base font-black font-mono text-amber-400 leading-none">√x</span>
+            <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 uppercase mt-1 group-hover:text-amber-300">SQRT</span>
+          </button>
+
+          <!-- 3. Natural Log -->
+          <button (click)="onSciButtonClick('LN')"
+                  [class.key-pressed]="activePressedKey() === 'LN'"
+                  class="sci-btn group flex flex-col items-center justify-center w-12 sm:w-16 h-11 sm:h-14 rounded-xl bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f] active:translate-y-0.5 transition-all hover:bg-neutral-800 hover:border-amber-500/50">
+            <span class="text-sm sm:text-base font-black font-mono text-amber-400 leading-none">ln</span>
+            <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 uppercase mt-1 group-hover:text-amber-300">LN</span>
+          </button>
+
+        </div>
       </div>
 
-      <!-- 16-BUTTON CASIO CALCULATOR KEYPAD GRID -->
-      <div class="keypad-grid grid grid-cols-4 gap-1 sm:gap-2 p-1 bg-[#141414] rounded-2xl border border-neutral-800 shadow-inner">
-
-        <!-- ROW 1 -->
-        <button (click)="pressKey('7')"
-                [class.key-pressed]="activePressedKey() === '7'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">ST/LAP</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">7</span>
-        </button>
-
-        <button (click)="pressKey('8')"
-                [class.key-pressed]="activePressedKey() === '8'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">12·24H</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">8</span>
-        </button>
-
-        <button (click)="pressKey('9')"
-                [class.key-pressed]="activePressedKey() === '9'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">ALM ON</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">9</span>
-        </button>
-
-        <button (click)="pressKey('÷')"
-                [class.key-pressed]="activePressedKey() === '÷' || activePressedKey() === '/'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-800 border border-neutral-600 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-red-400 leading-none mb-0.5 font-bold">C / AC</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-amber-400 leading-none">÷</span>
-        </button>
-
-        <!-- ROW 2 -->
-        <button (click)="pressKey('4')"
-                [class.key-pressed]="activePressedKey() === '4'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">STOP</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">4</span>
-        </button>
-
-        <button (click)="pressKey('5')"
-                [class.key-pressed]="activePressedKey() === '5'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">SIG ON</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">5</span>
-        </button>
-
-        <button (click)="pressKey('6')"
-                [class.key-pressed]="activePressedKey() === '6'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">DT SET</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">6</span>
-        </button>
-
-        <button (click)="pressKey('×')"
-                [class.key-pressed]="activePressedKey() === '×' || activePressedKey() === '*'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-800 border border-neutral-600 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5">M+</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-amber-400 leading-none">×</span>
-        </button>
-
-        <!-- ROW 3 -->
-        <button (click)="pressKey('1')"
-                [class.key-pressed]="activePressedKey() === '1'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">START</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">1</span>
-        </button>
-
-        <button (click)="pressKey('2')"
-                [class.key-pressed]="activePressedKey() === '2'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">SEC ADJ</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">2</span>
-        </button>
-
-        <button (click)="pressKey('3')"
-                [class.key-pressed]="activePressedKey() === '3'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">SET</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">3</span>
-        </button>
-
-        <button (click)="pressKey('-')"
-                [class.key-pressed]="activePressedKey() === '-'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-800 border border-neutral-600 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5">MEM</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-amber-400 leading-none">-</span>
-        </button>
-
-        <!-- ROW 4 -->
-        <button (click)="pressKey('0')"
-                [class.key-pressed]="activePressedKey() === '0'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">LIGHT</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">0</span>
-        </button>
-
-        <button (click)="pressKey('.')"
-                [class.key-pressed]="activePressedKey() === '.'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-900 border border-neutral-700/80 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5 group-hover:text-amber-400">P.M.</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-neutral-100 leading-none">•</span>
-        </button>
-
-        <button (click)="pressKey('=')"
-                [class.key-pressed]="activePressedKey() === '=' || activePressedKey() === 'Enter'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-amber-600 border border-amber-500 shadow-[0_2px_0_#7c2d12,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#7c2d12,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-amber-100 leading-none mb-0.5 font-bold">EXEC</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-white leading-none">=</span>
-        </button>
-
-        <button (click)="pressKey('+')"
-                [class.key-pressed]="activePressedKey() === '+'"
-                class="key-btn group relative flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg bg-neutral-800 border border-neutral-600 shadow-[0_2px_0_#0f0f0f,0_3px_5px_rgba(0,0,0,0.6)] sm:shadow-[0_3px_0_#0f0f0f,0_4px_6px_rgba(0,0,0,0.6)] active:translate-y-0.5 transition-all">
-          <span class="text-[7px] sm:text-[8px] font-mono text-neutral-400 leading-none mb-0.5">ADD</span>
-          <span class="text-sm sm:text-lg font-extrabold font-mono text-amber-400 leading-none">+</span>
-        </button>
-
-      </div>
     </div>
 
     <!-- LOWER WATCH STRAP -->

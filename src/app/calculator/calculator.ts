@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export type WatchMode = 'TIME' | 'CALC' | 'ALARM' | 'STOPWATCH' | 'DUAL_TIME';
+export type WatchMode = 'TIME' | 'CALC' | 'SCI';
 
 @Component({
   selector: 'app-calculator',
@@ -15,7 +15,6 @@ export class Calculator implements OnInit, OnDestroy {
   readonly currentMode = signal<WatchMode>('TIME');
   readonly soundEnabled = signal<boolean>(true);
   readonly lightActive = signal<boolean>(false);
-  readonly wristView = signal<boolean>(false);
 
   // Real-time Clock
   readonly currentTime = signal<Date>(new Date());
@@ -29,23 +28,6 @@ export class Calculator implements OnInit, OnDestroy {
   readonly waitingForNextOperand = signal<boolean>(false);
   readonly isError = signal<boolean>(false);
 
-  // Stopwatch State
-  readonly swRunning = signal<boolean>(false);
-  readonly swElapsedMs = signal<number>(0);
-  readonly swSplitMs = signal<number | null>(null);
-  private swInterval?: any;
-
-  // Alarm State
-  readonly alarmHours = signal<number>(7);
-  readonly alarmMinutes = signal<number>(0);
-  readonly alarmEnabled = signal<boolean>(true);
-  readonly hourlyChime = signal<boolean>(true);
-  readonly isAlarmRinging = signal<boolean>(false);
-  private alarmCheckInterval?: any;
-
-  // Dual Time State
-  readonly dtOffsetHours = signal<number>(5); // e.g. +5 hours offset
-
   // Audio Context for vintage piezo beeps
   private audioCtx?: AudioContext;
 
@@ -57,22 +39,15 @@ export class Calculator implements OnInit, OnDestroy {
     this.clockInterval = setInterval(() => {
       this.currentTime.set(new Date());
     }, 1000);
-
-    // Alarm checker interval
-    this.alarmCheckInterval = setInterval(() => {
-      this.checkAlarm();
-    }, 1000);
   }
 
   ngOnDestroy() {
     if (this.clockInterval) clearInterval(this.clockInterval);
-    if (this.swInterval) clearInterval(this.swInterval);
-    if (this.alarmCheckInterval) clearInterval(this.alarmCheckInterval);
     if (this.audioCtx) this.audioCtx.close();
   }
 
   // Web Audio Piezo BEEP generator
-  playSound(type: 'beep' | 'mode' | 'alarm' | 'error' | 'light' = 'beep') {
+  playSound(type: 'beep' | 'mode' | 'light' = 'beep') {
     if (!this.soundEnabled()) return;
     try {
       if (!this.audioCtx) {
@@ -116,20 +91,6 @@ export class Calculator implements OnInit, OnDestroy {
         gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
         osc2.start(now + 0.05);
         osc2.stop(now + 0.09);
-      } else if (type === 'alarm') {
-        // Classic Casio alarm chirp
-        for (let i = 0; i < 4; i++) {
-          const chirpOsc = this.audioCtx.createOscillator();
-          const chirpGain = this.audioCtx.createGain();
-          chirpOsc.connect(chirpGain);
-          chirpGain.connect(this.audioCtx.destination);
-          chirpOsc.type = 'square';
-          chirpOsc.frequency.setValueAtTime(4096, now + i * 0.12);
-          chirpGain.gain.setValueAtTime(0.12, now + i * 0.12);
-          chirpGain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.06);
-          chirpOsc.start(now + i * 0.12);
-          chirpOsc.stop(now + i * 0.12 + 0.06);
-        }
       } else if (type === 'light') {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(1500, now);
@@ -143,9 +104,9 @@ export class Calculator implements OnInit, OnDestroy {
     }
   }
 
-  // Cycle Watch Modes
+  // Cycle Watch Modes (TIME -> CALC -> SCI -> TIME)
   cycleMode() {
-    const modes: WatchMode[] = ['TIME', 'CALC', 'ALARM', 'STOPWATCH', 'DUAL_TIME'];
+    const modes: WatchMode[] = ['TIME', 'CALC', 'SCI'];
     const currentIndex = modes.indexOf(this.currentMode());
     const nextMode = modes[(currentIndex + 1) % modes.length];
     this.currentMode.set(nextMode);
@@ -161,8 +122,12 @@ export class Calculator implements OnInit, OnDestroy {
     this.soundEnabled.set(!this.soundEnabled());
   }
 
-  toggleWristView() {
-    this.wristView.set(!this.wristView());
+  // Scientific sidecar button click handler (stub left for custom math implementation)
+  onSciButtonClick(fn: 'EXP' | 'SQRT' | 'LN') {
+    this.playSound('beep');
+    this.activePressedKey.set(fn);
+    setTimeout(() => this.activePressedKey.set(null), 150);
+    // User custom math implementation
   }
 
   // Keyboard Shortcuts HostListener
@@ -185,7 +150,7 @@ export class Calculator implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.currentMode() === 'CALC') {
+    if (this.currentMode() === 'CALC' || this.currentMode() === 'SCI') {
       if ('0123456789.'.includes(key)) {
         event.preventDefault();
         this.pressKey(key);
@@ -205,14 +170,6 @@ export class Calculator implements OnInit, OnDestroy {
         event.preventDefault();
         this.pressKey('C');
       }
-    } else if (this.currentMode() === 'STOPWATCH') {
-      if (key === ' ' || key === 'Enter') {
-        event.preventDefault();
-        this.toggleStopwatch();
-      } else if (key === 'r' || key === 'R' || key === 'Escape') {
-        event.preventDefault();
-        this.resetStopwatch();
-      }
     }
   }
 
@@ -221,18 +178,10 @@ export class Calculator implements OnInit, OnDestroy {
     this.activePressedKey.set(keyLabel);
     setTimeout(() => this.activePressedKey.set(null), 150);
 
-    const mode = this.currentMode();
-
-    if (mode === 'CALC') {
+    if (this.currentMode() === 'CALC' || this.currentMode() === 'SCI') {
       this.handleCalcKey(keyLabel);
-    } else if (mode === 'TIME') {
+    } else if (this.currentMode() === 'TIME') {
       this.handleTimeKey(keyLabel);
-    } else if (mode === 'ALARM') {
-      this.handleAlarmKey(keyLabel);
-    } else if (mode === 'STOPWATCH') {
-      this.handleStopwatchKey(keyLabel);
-    } else if (mode === 'DUAL_TIME') {
-      this.handleDualTimeKey(keyLabel);
     }
   }
 
@@ -346,72 +295,6 @@ export class Calculator implements OnInit, OnDestroy {
     }
   }
 
-  // Alarm Mode Handlers
-  private handleAlarmKey(key: string) {
-    this.playSound('beep');
-    if (key === '9' || key === 'ALM') {
-      this.alarmEnabled.set(!this.alarmEnabled());
-    } else if (key === '5' || key === 'SIG') {
-      this.hourlyChime.set(!this.hourlyChime());
-    } else if (key === '1' || key === '+') {
-      let m = (this.alarmMinutes() + 5) % 60;
-      this.alarmMinutes.set(m);
-    } else if (key === '2' || key === '-') {
-      let h = (this.alarmHours() + 1) % 24;
-      this.alarmHours.set(h);
-    }
-  }
-
-  private checkAlarm() {
-    if (!this.alarmEnabled()) return;
-    const now = this.currentTime();
-    if (now.getHours() === this.alarmHours() && now.getMinutes() === this.alarmMinutes() && now.getSeconds() === 0) {
-      this.isAlarmRinging.set(true);
-      this.playSound('alarm');
-      setTimeout(() => this.isAlarmRinging.set(false), 5000);
-    }
-  }
-
-  // Stopwatch Mode Handlers
-  private handleStopwatchKey(key: string) {
-    this.playSound('beep');
-    if (key === '7' || key === '1' || key === 'ST') {
-      this.toggleStopwatch();
-    } else if (key === '4' || key === '0' || key === 'R') {
-      this.resetStopwatch();
-    }
-  }
-
-  toggleStopwatch() {
-    if (this.swRunning()) {
-      clearInterval(this.swInterval);
-      this.swRunning.set(false);
-    } else {
-      this.swRunning.set(true);
-      const startTime = Date.now() - this.swElapsedMs();
-      this.swInterval = setInterval(() => {
-        this.swElapsedMs.set(Date.now() - startTime);
-      }, 10);
-    }
-  }
-
-  resetStopwatch() {
-    clearInterval(this.swInterval);
-    this.swRunning.set(false);
-    this.swElapsedMs.set(0);
-    this.swSplitMs.set(null);
-  }
-
-  // Dual Time Handlers
-  private handleDualTimeKey(key: string) {
-    this.playSound('beep');
-    if (key === '+' || key === '1') {
-      this.dtOffsetHours.set((this.dtOffsetHours() + 1) % 24);
-    } else if (key === '-' || key === '2') {
-      this.dtOffsetHours.set((this.dtOffsetHours() - 1 + 24) % 24);
-    }
-  }
-
   // Format Helpers for Display
   readonly formattedDayOfWeek = computed(() => {
     const days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
@@ -444,27 +327,5 @@ export class Calculator implements OnInit, OnDestroy {
 
   readonly isPm = computed(() => {
     return this.currentTime().getHours() >= 12;
-  });
-
-  readonly formattedStopwatchDisplay = computed(() => {
-    const totalMs = this.swElapsedMs();
-    const mins = Math.floor(totalMs / 60000).toString().padStart(2, '0');
-    const secs = Math.floor((totalMs % 60000) / 1000).toString().padStart(2, '0');
-    const cs = Math.floor((totalMs % 1000) / 10).toString().padStart(2, '0');
-    return { mins, secs, cs };
-  });
-
-  readonly formattedAlarmDisplay = computed(() => {
-    const h = this.alarmHours().toString().padStart(2, '0');
-    const m = this.alarmMinutes().toString().padStart(2, '0');
-    return `${h}:${m}`;
-  });
-
-  readonly formattedDualTimeDisplay = computed(() => {
-    const d = new Date(this.currentTime().getTime() + this.dtOffsetHours() * 3600000);
-    const h = d.getHours().toString().padStart(2, '0');
-    const m = d.getMinutes().toString().padStart(2, '0');
-    const s = d.getSeconds().toString().padStart(2, '0');
-    return `${h}:${m}:${s}`;
   });
 }
