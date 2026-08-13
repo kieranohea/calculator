@@ -100,3 +100,12 @@
   background: #2a2a35;
   border-radius: 3px;
 }
+
+/* Hide scrollbar utility for mobile mode bar */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
